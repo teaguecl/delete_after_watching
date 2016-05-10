@@ -1,0 +1,109 @@
+# Copyright (C) 2016 Chris Teague
+# This file is part of "Delete After Watching" (DAW) Kodi Addon.
+#
+#    DAW is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    DAW is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with DAW.  If not, see <http://www.gnu.org/licenses/>.
+
+# Kodi Media Center language file
+# Addon Name: Skin Widgets
+# Addon id: service.foobarskin.widgets
+# Addon Provider: teaguecl
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: English (http://www.transifex.com/projects/p/xbmc-addons/language/en/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#32000"
+msgid "script.service.daw"
+msgstr ""
+
+msgctxt "#32001"
+msgid "General"
+msgstr ""
+
+msgctxt "#32002"
+msgid "TV Series"
+msgstr ""
+
+msgctxt "#32003"
+msgid "Movies"
+msgstr ""
+
+msgctxt "#32004"
+msgid "Prompt on first watch only"
+msgstr ""
+
+msgctxt "#32005"
+msgid "Prompt for delete"
+msgstr ""
+
+msgctxt "#32006"
+msgid "Never"
+msgstr ""
+
+msgctxt "#32007"
+msgid "Selected Series"
+msgstr ""
+
+msgctxt "#32008"
+msgid "Unselected Series"
+msgstr ""
+
+msgctxt "#32009"
+msgid "Select Series"
+msgstr ""
+
+msgctxt "#32010"
+msgid "Series"
+msgstr ""
+
+msgctxt "#32011"
+msgid "Movies"
+msgstr ""
+
+msgctxt "#32012"
+msgid "String 12"
+msgstr ""
+
+msgctxt "#32013"
+msgid "String 13"
+msgstr ""
+
+msgctxt "#32014"
+msgid "Selected Movies"
+msgstr ""
+
+msgctxt "#32015"
+msgid "Unselected Movies"
+msgstr ""
+
+msgctxt "#32016"
+msgid "Select Movies"
+msgstr ""
+
+msgctxt "#32017"
+msgid "Advanced"
+msgstr ""
+
+msgctxt "#32018"
+msgid "Permanently Delete?"
+msgstr ""

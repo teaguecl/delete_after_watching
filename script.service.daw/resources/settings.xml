@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--
+# Copyright (C) 2016 Chris Teague
+# This file is part of "Delete After Watching" (DAW) Kodi Addon.
+#
+#    DAW is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    DAW is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with DAW.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<settings>
+  <category label="32001">  <!-- General -->
+    <!--  todo: disable controls based on context -->
+    <!--  todo: look into subsetting=true-->
+
+    <!-- TV Series -->
+    <setting label="32002" type="lsep"/>
+    <setting label="32005" id="series_prompt_rule" type="enum" lvalues="32006|32007|32008" default="0"/>
+    <setting id="series_first_watch_del" type="bool" label="32004" default="true"/>
+    <setting label="32009" type="action" action="RunScript(special://home/addons/script.service.daw/resources/lib/runme.py, type=series)"/>
+
+    <!-- Movies -->
+    <setting label="32003" type="lsep"/>
+    <setting label="32005" id="movies_prompt_rule" type="enum" lvalues="32006|32014|32015" default="0"/>
+    <setting id="movie_first_watch_del" type="bool" label="32004" default="true"/>
+    <setting label="32016" type="action" action="RunScript(special://home/addons/script.service.daw/resources/lib/runme.py, type=movie)"/>
+
+    <!--  todo: section for non-library videos -->
+  </category>
+
+  <category label="32017">  <!-- Advanced -->
+    <!--  todo: advanced category with 'clear movie/series selections' and ??? -->
+    <!--  todo: set log level -->
+
+  </category>
+</settings>

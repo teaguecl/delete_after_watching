@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+# Copyright (C) 2016 Chris Teague
+# This file is part of "Delete After Watching" (DAW) Kodi Addon.
+#
+#    DAW is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    DAW is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with DAW.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<addon id="script.service.daw" name="Delete After Watching" version="0.0.1" provider-name="teaguecl">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.pyxbmct" version="1.1" />
+  </requires>
+  <extension point="xbmc.service" library="service.py" start="login" />
+  <extension point="xbmc.python.script" library="script.py">
+    <provides>executable</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Delete after watching</summary>
+    <description>Prompts user to delete a video when it is finished.
+
+    This behavior is modeled after DVR's which prompt to delete after a show has been watched.  It is configurable such that it will only prompt for TV Series or Movies which the user wants to be deleted after watching.
+    </description>
+    <platform>all</platform>
+    <email>chris.teague@gmail.com</email>
+  </extension>
+</addon>
