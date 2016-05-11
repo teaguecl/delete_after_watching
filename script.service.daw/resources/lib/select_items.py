@@ -14,7 +14,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with DAW.  If not, see <http://www.gnu.org/licenses/>.
 
-#todo: runme.py is an awful name
 #todo: pylint, pycharm, pep8
 #python imports
 import sys

@@ -20,11 +20,9 @@ import xbmc
 import xbmcaddon
 import json
 import os
+import random
 
-try:
-    __ADDON = xbmcaddon.Addon()
-except RuntimeError:
-    __ADDON = xbmcaddon.Addon(id='script.service.daw')
+__ADDON = xbmcaddon.Addon(id='script.service.daw')
 __ADDON_ID = __ADDON.getAddonInfo('id').decode('utf-8')
 ADDON_NAME = __ADDON.getAddonInfo('name')
 _profile = xbmc.translatePath(__ADDON.getAddonInfo('profile') )
@@ -33,15 +31,15 @@ series_selected_path = os.path.join(_profile, _series_selected_file)
 _movies_selected_file = 'movies_selected.json'
 movies_selected_path = os.path.join(_profile, _movies_selected_file)
 
-
 def log(msg, level=xbmc.LOGDEBUG):
-    xbmc.log(("[" + __ADDON_ID + "] " + msg).encode('utf-8', 'replace'), level)
+    if "true" == xbmcaddon.Addon(id='script.service.daw').getSetting('logging_enabled'):
+        xbmc.log(("[" + __ADDON_ID + "] " + msg).encode('utf-8', 'replace'), level)
 
 def rpc(method, params={}):
-    id=42 #todo: make this a random integer
+    id=random.randint(1,99)
     params = json.dumps(params, encoding='utf-8')
     query = b'{"jsonrpc": "2.0", "method": "%s", "params": %s, "id": %d}' % (method, params, id)
-    log("daw rpc: %s" % (query))
+    log("daw rpc: {}".format(query))
     return json.loads(xbmc.executeJSONRPC(query), encoding='utf-8')
 
 def string(id):

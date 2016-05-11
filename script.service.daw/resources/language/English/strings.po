@@ -107,3 +107,15 @@ msgstr ""
 msgctxt "#32018"
 msgid "Permanently Delete?"
 msgstr ""
+
+msgctxt "#32019"
+msgid "Non-Library Videos"
+msgstr ""
+
+msgctxt "#32020"
+msgid "Always"
+msgstr ""
+
+msgctxt "#32021"
+msgid "Enable Logging"
+msgstr ""

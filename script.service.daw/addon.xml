@@ -29,7 +29,7 @@
     <summary>Delete after watching</summary>
     <description>Prompts user to delete a video when it is finished.
 
-    This behavior is modeled after DVR's which prompt to delete after a show has been watched.  It is configurable such that it will only prompt for TV Series or Movies which the user wants to be deleted after watching.
+This behavior is modeled after DVRs which prompt to delete after a show has been watched.  It is configurable such that it will only prompt for TV Series or Movies which the user selects.
     </description>
     <platform>all</platform>
     <email>chris.teague@gmail.com</email>
