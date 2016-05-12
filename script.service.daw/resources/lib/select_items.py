@@ -51,7 +51,6 @@ class MultiChoiceDialog(pyxbmct.AddonDialogWindow):
         self.connect_controls()
         self.listing.addItems(items)
         self.set_navigation()
-        self.filename = filename
         self.ok_pressed = False
 
         for index in range(self.listing.size()):
@@ -105,13 +104,14 @@ class MultiChoiceDialog(pyxbmct.AddonDialogWindow):
         self.selected = []
         super(MultiChoiceDialog, self).close()
 
-if __name__ == "__main__":
+
+def select_items(media_type):
     items = []
     selected_items = []
     filename = None  # .json file to store the selected items in
     select_dialog_title = None
 
-    if sys.argv[1] == 'type=movie':
+    if media_type == 'type=movie':
         util.log("Selecting Movies")
         resp = util.rpc('VideoLibrary.GetMovies',
                         {"properties": ['title', 'sorttitle', 'originaltitle'],
@@ -124,7 +124,7 @@ if __name__ == "__main__":
         filename = util.movies_selected_path
         select_dialog_title = util.string(32016)
 
-    elif sys.argv[1] == 'type=series':
+    elif media_type == 'type=series':
         util.log("Selecting tv series")
         resp = util.rpc('VideoLibrary.GetTVShows',
                         {"properties": ['title', 'sorttitle', 'originaltitle'],
@@ -155,3 +155,7 @@ if __name__ == "__main__":
         fp.close()
 
     del dialog  # delete when done, as xbmcgui classes aren't grabage-collected
+
+
+if __name__ == "__main__":
+    select_items(sys.argv[1])

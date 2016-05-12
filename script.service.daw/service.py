@@ -15,8 +15,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with DAW.  If not, see <http://www.gnu.org/licenses/>.
 
-# todo: comment classes/methods
-# todo: buggalo or other exception handling
 # todo: exit kodi while in setting menu
 """Delete After Watching service module
 
@@ -131,6 +129,7 @@ class DAWMonitor(xbmc.Monitor, object):
                 if watched_to_end is True:
                     self.player.playing.ended()
                 self.player.playing = None
+
 
 monitor = DAWMonitor(DAWPlayer())
 monitor.waitForAbort()
