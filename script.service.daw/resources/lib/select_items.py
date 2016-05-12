@@ -14,13 +14,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with DAW.  If not, see <http://www.gnu.org/licenses/>.
 
-#todo: pylint, pycharm, pep8
-#python imports
+# todo: comment classes/methods
+# python imports
 import sys
 import os
 import json
 
-#kodi imports
+# kodi imports
 import xbmc
 import xbmcgui
 import xbmcaddon
@@ -35,9 +35,14 @@ _check_icon = os.path.join(_path, 'resources', 'media', 'check.png')
 _rows = 12
 _cols = 4
 
-#todo: maybe use this with json encoded string instead of making my own file?: addon.setSetting(key, value)
 
 class MultiChoiceDialog(pyxbmct.AddonDialogWindow):
+    """
+    Dialog which allow for selecting multiple items simultaneously.
+    Based on the pyxbmct gui library by Roman_V_M and the suggested
+    implementation from the forum:
+    http://forum.kodi.tv/showthread.php?tid=207531
+    """
     def __init__(self, title="", items=[], selected=[]):
         super(MultiChoiceDialog, self).__init__(title)
         self.setGeometry(width_=540, height_=648, rows_=_rows, columns_=_cols)
@@ -55,7 +60,8 @@ class MultiChoiceDialog(pyxbmct.AddonDialogWindow):
 
     def set_controls(self):
         self.listing = pyxbmct.List(_imageWidth=15)
-        self.placeControl(self.listing, row=0, column=0, rowspan=_rows-1, columnspan=_cols)
+        self.placeControl(self.listing, row=0, column=0,
+                          rowspan=_rows-1, columnspan=_cols)
         self.ok_button = pyxbmct.Button("OK")
         self.placeControl(self.ok_button, row=_rows-1, column=(_cols/2)-1)
         self.cancel_button = pyxbmct.Button("Cancel")
@@ -69,10 +75,12 @@ class MultiChoiceDialog(pyxbmct.AddonDialogWindow):
     def set_navigation(self):
         self.listing.controlUp(self.ok_button)
         self.listing.controlDown(self.ok_button)
-        self.ok_button.setNavigation(self.listing, self.listing, self.cancel_button, self.cancel_button)
-        self.cancel_button.setNavigation(self.listing, self.listing, self.ok_button, self.ok_button)
+        self.listing.controlRight(self.ok_button)
+        self.ok_button.setNavigation(self.listing, self.listing,
+                                     self.cancel_button, self.cancel_button)
+        self.cancel_button.setNavigation(self.listing, self.listing,
+                                         self.ok_button, self.ok_button)
         self.setFocus(self.listing)
-
 
     def check_uncheck(self, index=None):
         if index:
@@ -100,31 +108,34 @@ class MultiChoiceDialog(pyxbmct.AddonDialogWindow):
 if __name__ == "__main__":
     items = []
     selected_items = []
-    filename=None  # .json file to store the selected items in
+    filename = None  # .json file to store the selected items in
+    select_dialog_title = None
 
     if sys.argv[1] == 'type=movie':
-        util.log("daw movie")
-        response = util.rpc('VideoLibrary.GetMovies',
-                    {"properties": ['title', 'sorttitle', 'originaltitle'], "sort": {"order": "ascending", "method": "title"}})
+        util.log("Selecting Movies")
+        resp = util.rpc('VideoLibrary.GetMovies',
+                        {"properties": ['title', 'sorttitle', 'originaltitle'],
+                         "sort": {"order": "ascending", "method": "title"}})
 
-        util.log("daw getmovies resp: %s" % (response))
-        result = response.get('result')
+        result = resp.get('result')
         library_movies = result.get('movies')
         for movie in library_movies:
             items.append(movie.get('title'))
-        filename=util.movies_selected_path
+        filename = util.movies_selected_path
+        select_dialog_title = util.string(32016)
 
     elif sys.argv[1] == 'type=series':
-        util.log("daw tv series")
-        response = util.rpc('VideoLibrary.GetTVShows',
-                            {"properties": ['title', 'sorttitle', 'originaltitle'], "sort": {"order": "ascending", "method": "title"}})
+        util.log("Selecting tv series")
+        resp = util.rpc('VideoLibrary.GetTVShows',
+                        {"properties": ['title', 'sorttitle', 'originaltitle'],
+                         "sort": {"order": "ascending", "method": "title"}})
 
-        util.log("daw getseries resp: %s" % (response))
-        result = response.get('result')
+        result = resp.get('result')
         tvshows = result.get('tvshows')
         for show in tvshows:
             items.append(show.get('title'))
-        filename=util.series_selected_path
+        filename = util.series_selected_path
+        select_dialog_title = util.string(32009)
     else:
         util.log("daw argument error, argv: %s" % (sys.argv))
         xbmcgui.Dialog().notification("Error", "Video type error")
@@ -135,8 +146,7 @@ if __name__ == "__main__":
         selected_items = json.load(fp)
         fp.close()
 
-    # todo: replace "Select items" with more descriptive title
-    dialog = MultiChoiceDialog("Select items", items, selected_items)
+    dialog = MultiChoiceDialog(select_dialog_title, items, selected_items)
     dialog.doModal()
     if dialog.ok_pressed and dialog.selected:
         new_selected = [items[i] for i in dialog.selected]
@@ -144,5 +154,4 @@ if __name__ == "__main__":
         json.dump(new_selected, fp)
         fp.close()
 
-    del dialog #You need to delete your instance when it is no longer needed
-    #because underlying xbmcgui classes are not grabage-collected.
+    del dialog  # delete when done, as xbmcgui classes aren't grabage-collected

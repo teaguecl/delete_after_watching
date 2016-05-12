@@ -15,197 +15,112 @@
 #    You should have received a copy of the GNU General Public License
 #    along with DAW.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import xbmcgui
+# todo: comment classes/methods
+# todo: buggalo or other exception handling
+# todo: exit kodi while in setting menu
+"""Delete After Watching service module
+
+This module implements the DAW service.  This service runs at startup,
+and continues until shutdown.
+
+The DAW service uses xmbc.Player to detect when a video has started, and
+it uses xbmc.Monitor to determine when it stops.  When a video stops, DAW
+will prompt the user to see if they would like to delete the just finished
+video.  This prompt is conditional, based on the settings the user has chosen
+(e.g. Movies, TV Shows etc).
+
+todo: put github url here
+"""
+
 from resources.lib import util
+from resources.lib import video_types
 import json
-import xbmcaddon
+import xbmc
 
-_PROMPT_NEVER = "0"
-_PROMPT_SELECTED = "1"
-_PROMPT_UNSELECTED = "2"
-_PROMPT_ALWAYS = "3" # warning: this value does not come out of settings.xml directly!
 
-#todo: split into it's own .py file
-class Video(object):
+class DAWPlayer(xbmc.Player, object):
+    """
+    Extension of the xbmc.Player used to detect when video playback begins.
+
+    The __init__ method may be documented in either the class level
+    docstring, or as a docstring on the __init__ method itself.
+
+    Either form is acceptable, but the two should not be mixed. Choose one
+    convention to document the __init__ method and be consistent with it.
+
+    Attributes:
+        playing (Video): Object representing the currently playing video.
+    """
+
     def __init__(self):
-        util.log("video created object")
-        self.title = None
-        self.full_title = None
-        self.prompt = None
-        self.playcount = None
-        self.first_watch_only = None
-        self.selected_path = None
-        self.file = None
+        self.playing = None
+        super(DAWPlayer, self).__init__()
 
-    def __str__(self):
-        obj_string = "title={}, full_title={}, prompt={}, playcount={}, first_watch={}, selected_path{}, file={}".format(
-            self.title, self.full_title,
-            self.prompt, str(self.playcount),
-            self.first_watch_only, self.selected_path, self.file)
-        return obj_string
-
-    def delete(self):
-        util.log("video delete")
-
-    def ended(self):
-        util.log("Video ended: {}".format(self))
-        if self.prompt == _PROMPT_NEVER:
-            return
-
-        do_prompt = False
-        if self.prompt == _PROMPT_ALWAYS:
-            do_prompt = True
-        else:
-            selected_videos = []
-            if os.path.isfile(self.selected_path):
-                fp = open(self.selected_path, 'r')
-                selected_videos = json.load(fp)
-                fp.close()
-
-            # check if the just finished video is 'selected'
-            if self.prompt == _PROMPT_SELECTED:
-                do_prompt = self.title in selected_videos
-            elif self.prompt == _PROMPT_UNSELECTED:
-                do_prompt = self.title not in selected_videos
-
-        # if configured to prompt on first watch, and this isn't the first watch - don't prompt for delete
-        if do_prompt and self.first_watch_only == 'true' and self.playcount != 0:
-            do_prompt = False
-
-        if do_prompt:
-            do_delete = xbmcgui.Dialog().yesno(self.full_title,
-                                               self.file, '',
-                                               util.string(32018), autoclose=120*1000)
-            if do_delete:
-                self.delete()
-
-class Movie(Video):
-    def __init__(self, id):
-        super(Movie, self).__init__()
-        self.id = id
-        self.selected_path = util.movies_selected_path
-    def ended(self):
-        util.log("Movie ended")
-        params = {'movieid': self.id, 'properties' : ['title', 'playcount', 'file']}
-        response = util.rpc('VideoLibrary.GetMovieDetails', params)
-        result = response.get('result')
-        util.log("moviedetails %s" % (response))
-        moviedetails = result.get('moviedetails')
-        movie_title = moviedetails.get('title')
-        filename = moviedetails.get('file')
-        self.title = movie_title
-        self.full_title = self.title
-        self.file = filename
-        self.playcount = int(moviedetails.get('playcount'))
-        self.prompt = xbmcaddon.Addon().getSetting('movies_prompt_rule')
-        self.first_watch_only = xbmcaddon.Addon().getSetting('movie_first_watch_del')
-        super(Movie, self).ended()
-    def delete(self):
-        util.log("Deleting Movie: {}".format(self.title))
-        params = {'movieid': self.id}
-        response = util.rpc('VideoLibrary.RemoveMovie', params)
-        if response.get('result') != 'OK':
-            util.log("Error removing from library")
-        os.remove(self.file)
-
-class SeriesEpisode(Video):
-    def __init__(self, id):
-        super(SeriesEpisode, self).__init__()
-        self.id = id
-        self.selected_path = util.series_selected_path
-
-    def ended(self):
-        util.log("tvshow ended: {}".format(self))
-        params = {'episodeid': self.id, 'properties' : ['title', 'playcount', 'file', 'tvshowid']}
-        response = util.rpc('VideoLibrary.GetEpisodeDetails', params)
-        result = response.get('result')
-        episodedetails = result.get('episodedetails')
-        episode_title = episodedetails.get('title')
-        filename = episodedetails.get('file')
-        tvshowid = episodedetails.get('tvshowid')
-        self.playcount = int(episodedetails.get('playcount'))
-
-        params = {'tvshowid': tvshowid, 'properties' : ['title', 'sorttitle', 'originaltitle', 'playcount', 'file']}
-        response = util.rpc('VideoLibrary.GetTVShowDetails', params)
-        result = response.get('result')
-        tvshowdetails = result.get('tvshowdetails')
-        series_title = tvshowdetails.get('title')
-        self.title = series_title
-        self.full_title = series_title + ': ' + episode_title
-        self.file = filename
-        self.prompt = xbmcaddon.Addon().getSetting('series_prompt_rule')
-        self.first_watch_only = xbmcaddon.Addon().getSetting('series_first_watch_del')
-        super(SeriesEpisode, self).ended()
-
-    def delete(self):
-        util.log("Deleting TV Show: {}".format(self.full_title))
-        params = {'episodeid': self.id}
-        response = util.rpc('VideoLibrary.RemoveEpisode', params)
-        if response.get('result') != 'OK':
-            util.log("Error removing from library") # todo: a notification here?
-        os.remove(self.file)
-
-
-class NonLibraryVideo(Video):
-    def __init__(self, filename, playcount):
-        util.log("nonlibrary started: {} playcount: {}".format(filename, playcount))
-        super(NonLibraryVideo, self).__init__()
-        self.file = filename
-        self.playcount = playcount
-
-    def ended(self):
-        util.log("nonlibrary video ended: {}".format(self))
-        self.prompt = xbmcaddon.Addon().getSetting('non-library_prompt_rule')
-        if self.prompt == "1": # Value 1 from this setting means 'always'
-            self.prompt = _PROMPT_ALWAYS
-        self.first_watch_only = xbmcaddon.Addon().getSetting('non-library_first_watch_del')
-        self.full_title = xbmcaddon.Addon().getAddonInfo('name')
-        super(NonLibraryVideo, self).ended()
-
-    def delete(self):
-        util.log("nonlibrary delete: {}".format(self.file))
-        os.remove(self.file)
-
-
-class DAWPlayer(xbmc.Player):
     def onPlayBackStarted(self):
+        """Callback which is executed when media playback begins.
+
+        This is an overload of the xbmc.Player class method of the same name.
+        It will detect what type of media is being played, and if it is one of
+        interest, it will store this information in the self.playing attribute.
+        """
         util.log("Playback started")
-        util.log("%s " % (self.getPlayingFile()))
+        util.log("{} ".format(xbmc.Player.getPlayingFile(self)))
         self.playing = None
 
         response = util.rpc('Player.GetActivePlayers')
-        playerList = response.get('result', [])
-        for player in playerList:
+        player_list = response.get('result', [])
+        for player in player_list:
             util.log("player: {}".format(player))
             if player.get('type') == 'video':
-                playerId = player.get('playerid')
-                response = util.rpc('Player.GetItem', {'playerid': playerId,
-                                    'properties': ['file', 'title', 'playcount']})
+                player_id = player.get('playerid')
+                response = util.rpc('Player.GetItem',
+                                    {'playerid': player_id,
+                                     'properties': ['file',
+                                                    'playcount']})
                 util.log("getitem resp: {}".format(response))
                 result = response.get('result')
                 item = result.get('item')
-                type = item.get('type')
-                id = item.get('id')
-                file = item.get('file')
-                title = item.get('title')
+                media_type = item.get('type')
+                media_id = item.get('id')
+                filename = item.get('file')
                 playcount = item.get('playcount')
 
                 util.log("playcount: {}".format(playcount))
-                util.log("type: {}".format(type))
-                if type == 'movie':
-                    self.playing = Movie(id)
-                elif type == 'episode':
-                    self.playing = SeriesEpisode(id)
-                elif type == 'unknown':
-                    self.playing = NonLibraryVideo(filename=file, playcount=playcount)
+                util.log("type: {}".format(media_type))
+                if media_type == 'movie':
+                    self.playing = video_types.Movie(media_id)
+                elif media_type == 'episode':
+                    self.playing = video_types.SeriesEpisode(media_id)
+                elif media_type == 'unknown':
+                    self.playing = video_types.NonLibraryVideo(filename,
+                                                               playcount)
 
-class DAWMonitor(xbmc.Monitor):
+
+class DAWMonitor(xbmc.Monitor, object):
+    """Monitors the status of Kodi.
+
+    Looks for media playback ending, and notifies the register DAWPlayer.
+
+    Args:
+        player (DAWPlayer): Player to be notified when media playback ends.
+
+    Attributes:
+        self.player (DAWPlayer): Player object
+
+    """
     def __init__(self, player):
-        super(DAWMonitor, self ).__init__()
+        super(DAWMonitor, self).__init__()
         self.player = player
 
     def onNotification(self, sender, method, data):
+        """Callback for Kodi notifications.
+
+        Checks if the notification is indicating that the media playback has
+        ended.  If so, it also checks if the media was watched all the way
+        to the end.  If both conditions are met, it notifies the registered
+        DAWPlayer object of this event.
+
+        """
         util.log("onNotification: %s" % (method))
         if method == 'Player.OnStop':
             data = json.loads(data)
@@ -213,10 +128,9 @@ class DAWMonitor(xbmc.Monitor):
 
             watched_to_end = data['end']
             if self.player.playing:
-                if watched_to_end == True:
+                if watched_to_end is True:
                     self.player.playing.ended()
                 self.player.playing = None
 
-player = DAWPlayer()
-monitor = DAWMonitor(player)
+monitor = DAWMonitor(DAWPlayer())
 monitor.waitForAbort()
