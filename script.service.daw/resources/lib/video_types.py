@@ -115,7 +115,8 @@ class Movie(Video):
         response = util.rpc('VideoLibrary.RemoveMovie', params)
         if response.get('result') != 'OK':
             util.log("Error removing from library")
-        os.remove(self.file)
+        else:
+            util.delete_file(self.file)
 
 
 class SeriesEpisode(Video):
@@ -150,12 +151,14 @@ class SeriesEpisode(Video):
 
     def delete(self):
         util.log("Deleting TV Show: {}".format(self.full_title))
+        util.log("file: {}".format(self.file))
         params = {'episodeid': self.id}
         response = util.rpc('VideoLibrary.RemoveEpisode', params)
         if response.get('result') != 'OK':
             util.log("Error removing from library")
             xbmcgui.Dialog().notification("Error", "Unable to remove from library")
-        os.remove(self.file)
+        else:
+            util.delete_file(self.file)
 
 
 class NonLibraryVideo(Video):
@@ -176,4 +179,4 @@ class NonLibraryVideo(Video):
 
     def delete(self):
         util.log("nonlibrary delete: {}".format(self.file))
-        os.remove(self.file)
+        util.delete_file(self.file)

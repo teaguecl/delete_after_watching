@@ -21,15 +21,16 @@ import xbmcaddon
 import json
 import os
 import random
+import xbmcvfs
 
 __ADDON = xbmcaddon.Addon(id='script.service.daw')
 __ADDON_ID = __ADDON.getAddonInfo('id').decode('utf-8')
 ADDON_NAME = __ADDON.getAddonInfo('name')
-_profile = xbmc.translatePath(__ADDON.getAddonInfo('profile'))
+profile = xbmc.translatePath(__ADDON.getAddonInfo('profile'))
 _series_selected_file = 'series_selected.json'
-series_selected_path = os.path.join(_profile, _series_selected_file)
+series_selected_path = os.path.join(profile, _series_selected_file)
 _movies_selected_file = 'movies_selected.json'
-movies_selected_path = os.path.join(_profile, _movies_selected_file)
+movies_selected_path = os.path.join(profile, _movies_selected_file)
 
 
 def log(msg, level=xbmc.LOGDEBUG):
@@ -47,3 +48,12 @@ def rpc(method, params={}):
 
 def string(id):
     return __ADDON.getLocalizedString(id)
+
+
+def delete_file(filename):
+    validated_file = xbmc.validatePath(filename)
+    if xbmcvfs.exists(validated_file):
+        log("deleting file: {}".format(validated_file))
+        xbmcvfs.delete(validated_file)
+    else:
+        log("delete file failed: {}".format(validated_file))

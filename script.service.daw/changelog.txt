@@ -1,2 +1,6 @@
+0.0.2 (05-14-2016):
+* Fix bug where setting won't save because profile directory doesn't exist
+* Fix problems with deleting from SMB shares
+
 0.0.1 (05-09-2016):
 * Initial public release

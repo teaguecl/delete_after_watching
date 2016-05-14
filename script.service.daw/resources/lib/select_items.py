@@ -150,6 +150,8 @@ def select_items(media_type):
     dialog.doModal()
     if dialog.ok_pressed and dialog.selected:
         new_selected = [items[i] for i in dialog.selected]
+        if not os.path.exists(util.profile):
+            os.makedirs(util.profile, 0755)
         fp = open(filename, 'w+')
         json.dump(new_selected, fp)
         fp.close()
