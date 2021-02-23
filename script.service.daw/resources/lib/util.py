@@ -24,7 +24,7 @@ import random
 import xbmcvfs
 
 __ADDON = xbmcaddon.Addon(id='script.service.daw')
-__ADDON_ID = __ADDON.getAddonInfo('id').decode('utf-8')
+__ADDON_ID = __ADDON.getAddonInfo('id')
 ADDON_NAME = __ADDON.getAddonInfo('name')
 profile = xbmc.translatePath(__ADDON.getAddonInfo('profile'))
 _series_selected_file = 'series_selected.json'
@@ -33,15 +33,15 @@ _movies_selected_file = 'movies_selected.json'
 movies_selected_path = os.path.join(profile, _movies_selected_file)
 
 
-def log(msg, level=xbmc.LOGDEBUG):
+def log(msg, level=xbmc.LOGINFO):
     if "true" == xbmcaddon.Addon(id='script.service.daw').getSetting('logging_enabled'):
-        xbmc.log(("[" + __ADDON_ID + "] " + msg).encode('utf-8', 'replace'), level)
+        xbmc.log("[" + __ADDON_ID + "] " + msg, level)
 
 
 def rpc(method, params={}):
     id = random.randint(1, 99)
-    params = json.dumps(params, encoding='utf-8')
-    query = b'{"jsonrpc": "2.0", "method": "%s", "params": %s, "id": %d}' % (method, params, id)
+    params = json.dumps(params)
+    query = '{"jsonrpc": "2.0", "method": "%s", "params": %s, "id": %d}' % (method, params, id)
     log("rpc: {}".format(query))
     return json.loads(xbmc.executeJSONRPC(query), encoding='utf-8')
 
@@ -51,7 +51,7 @@ def string(id):
 
 
 def delete_file(filename):
-    validated_file = xbmc.validatePath(filename)
+    validated_file = xbmcvfs.validatePath(filename)
     if xbmcvfs.exists(validated_file):
         log("deleting file: {}".format(validated_file))
         xbmcvfs.delete(validated_file)

@@ -128,13 +128,18 @@ class SeriesEpisode(Video):
 
     def ended(self):
         util.log("tvshow ended: {}".format(self))
-        params = {'episodeid': self.id, 'properties': ['title', 'playcount', 'file', 'tvshowid']}
+        params = {'episodeid': self.id, 'properties': ['title', 'playcount', 'file', 'tvshowid', 'resume', 'runtime']}
         response = util.rpc('VideoLibrary.GetEpisodeDetails', params)
         result = response.get('result')
         episodedetails = result.get('episodedetails')
         episode_title = episodedetails.get('title')
         filename = episodedetails.get('file')
         tvshowid = episodedetails.get('tvshowid')
+
+        resume = episodedetails.get('resume')
+        runtime = episodedetails.get('runtime')
+        util.log("tv resume: {}   runtime: {}".format(resume, runtime))
+
         self.playcount = int(episodedetails.get('playcount'))
 
         params = {'tvshowid': tvshowid, 'properties': ['title', 'sorttitle', 'originaltitle', 'playcount', 'file']}

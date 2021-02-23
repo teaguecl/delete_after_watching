@@ -54,7 +54,21 @@ class DAWPlayer(xbmc.Player, object):
         self.playing = None
         super(DAWPlayer, self).__init__()
 
-    def onPlayBackStarted(self):
+    def onPlayBackEnded(self):
+        util.log("Playback ended")
+        if self.isPlayingVideo():
+            util.log("Playing a video")
+            util.log("time: {}".format(self.getTime()))
+        pass
+
+    def onPlayBackStopped(self):
+        util.log("Playback stopped")
+        if self.isPlayingVideo():
+            util.log("Playing a video")
+            util.log("time: {}".format(self.getTime()))
+        pass
+
+    def onAVStarted(self):
         """Callback which is executed when media playback begins.
 
         This is an overload of the xbmc.Player class method of the same name.
@@ -123,13 +137,27 @@ class DAWMonitor(xbmc.Monitor, object):
         if method == 'Player.OnStop':
             data = json.loads(data)
             util.log("onStop data: %s" % (data))
-
+            
             watched_to_end = data['end']
             if self.player.playing:
                 if watched_to_end is True:
                     self.player.playing.ended()
                 self.player.playing = None
 
+        if method == 'VideoLibrary.OnUpdate':
+            data = json.loads(data)
+            util.log("onUpdate data: %s" % (data))
+            sid = 6
+            params = {'episodeid': sid, 'properties': ['title', 'playcount', 'file', 'tvshowid', 'resume', 'runtime']}
+            response = util.rpc('VideoLibrary.GetEpisodeDetails', params)
+            result = response.get('result')
+            episodedetails = result.get('episodedetails')
+            episode_title = episodedetails.get('title')
+            filename = episodedetails.get('file')
+            tvshowid = episodedetails.get('tvshowid')
+            resume = episodedetails.get('resume')
+            runtime = episodedetails.get('runtime')
+            util.log("tv resume: {}   runtime: {}".format(resume, runtime))
 
 monitor = DAWMonitor(DAWPlayer())
 monitor.waitForAbort()
