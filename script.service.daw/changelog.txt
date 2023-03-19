@@ -1,3 +1,11 @@
+0.0.4
+* Use newer version of pyxbmc (version=1.3.1)
+* Fix int/float issues with newer versions of python
+* Fix list_item usage in Kodi python api 19+
+* Fix json.loads() usage of deprecated 'encoding' argument
+
+0.0.3 (?)
+
 0.0.2 (05-14-2016):
 * Fix bug where setting won't save because profile directory doesn't exist
 * Fix problems with deleting from SMB shares

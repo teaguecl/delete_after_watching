@@ -62,9 +62,9 @@ class MultiChoiceDialog(pyxbmct.AddonDialogWindow):
         self.placeControl(self.listing, row=0, column=0,
                           rowspan=_rows-1, columnspan=_cols)
         self.ok_button = pyxbmct.Button("OK")
-        self.placeControl(self.ok_button, row=_rows-1, column=(_cols/2)-1)
+        self.placeControl(self.ok_button, row=_rows-1, column=(_cols//2)-1)
         self.cancel_button = pyxbmct.Button("Cancel")
-        self.placeControl(self.cancel_button, row=_rows-1, column=(_cols/2))
+        self.placeControl(self.cancel_button, row=_rows-1, column=(_cols//2))
 
     def connect_controls(self):
         self.connect(self.listing, self.check_uncheck)
@@ -87,10 +87,10 @@ class MultiChoiceDialog(pyxbmct.AddonDialogWindow):
         else:
             list_item = self.listing.getSelectedItem()
         if list_item.getLabel2() == "checked":
-            list_item.setIconImage("")
+            list_item.setArt({'icon': ''})
             list_item.setLabel2("unchecked")
         else:
-            list_item.setIconImage(_check_icon)
+            list_item.setArt({'icon': _check_icon})
             list_item.setLabel2("checked")
 
     def ok(self):
@@ -151,7 +151,7 @@ def select_items(media_type):
     if dialog.ok_pressed and dialog.selected:
         new_selected = [items[i] for i in dialog.selected]
         if not os.path.exists(util.profile):
-            os.makedirs(util.profile, 0755)
+            os.makedirs(util.profile, 0o755)
         fp = open(filename, 'w+')
         json.dump(new_selected, fp)
         fp.close()

@@ -26,7 +26,7 @@ import xbmcvfs
 __ADDON = xbmcaddon.Addon(id='script.service.daw')
 __ADDON_ID = __ADDON.getAddonInfo('id')
 ADDON_NAME = __ADDON.getAddonInfo('name')
-profile = xbmc.translatePath(__ADDON.getAddonInfo('profile'))
+profile = xbmcvfs.translatePath(__ADDON.getAddonInfo('profile'))
 _series_selected_file = 'series_selected.json'
 series_selected_path = os.path.join(profile, _series_selected_file)
 _movies_selected_file = 'movies_selected.json'
@@ -43,7 +43,7 @@ def rpc(method, params={}):
     params = json.dumps(params)
     query = '{"jsonrpc": "2.0", "method": "%s", "params": %s, "id": %d}' % (method, params, id)
     log("rpc: {}".format(query))
-    return json.loads(xbmc.executeJSONRPC(query), encoding='utf-8')
+    return json.loads(xbmc.executeJSONRPC(query))
 
 
 def string(id):
